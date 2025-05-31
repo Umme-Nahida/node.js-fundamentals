@@ -1,4 +1,5 @@
 // Include the fs module
+const { error } = require('console');
 const fs = require('fs');
 
 // -------------------------------------------------------------Read the file synchronously
@@ -64,12 +65,36 @@ console.log('task one 01')
 
 // ------------------------------------------------create readStream event and lishener
 const readStream = fs.createReadStream('./hello.txt',{encoding:'utf-8'})
-const writeStream = fs.createWriteStream('./input.txt',{encoding:'utf-8'})
+const writeStream = fs.createWriteStream('.hello-world.txt',{encoding:'utf-8'})
 
-readStream.on('data',(data)=>{
+readStream.on("error", (err) => {
+    console.log("Read error:", err);
+});
+
+ writeStream.on("error", (err) => {
+    throw Error("Write error:", err);
+});
+
+readStream.on("data",(data)=>{
     console.log(data)
+    writeStream.write(data,(err)=>{
+       if(err){
+         console.log("write error",err)
+       }
+    })
+
 })
 
+readStream.on('end',()=>{
+    console.log('reading is done')
+    writeStream.end()
+})
+
+writeStream.on("finish",()=>{
+    console.log("written is completed successfully")
+})
+
+// console.log('task 2')
 
 
 
