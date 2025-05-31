@@ -1,13 +1,13 @@
-
-
+console.log(process.argv)
 const path = require('path');
 const fs = require('fs')
-console.log(process.argv)
+
 
 const inputArguments = process.argv.slice(2);
 console.log(inputArguments)
 
 const text = inputArguments.join(' ');
+console.log(text,'text')
 if (!text) {
     console.error('Please provide a message to log.');
     process.exit(1);
