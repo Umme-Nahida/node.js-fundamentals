@@ -14,18 +14,21 @@ const { url } = require('inspector');
 // ]
 
 const server = http.createServer((req, res) => {
-    // res.writeHead(200, {'Content-Type' : 'text/plain'});
-    console.log('object',req.url, req.method)
+  
     const url = new URL(req.url, `http://${req.headers.host}`);
-    console.log('url', url.pathname, url.searchParams.get('id'));
-    if (req.url === '/todos' && req.method === 'GET') {
+    const pathname = url.pathname;
+    // console.log('url', url.pathname, url.searchParams.get('id'));
+
+    if (pathname === '/todos' && req.method === 'GET') {
         res.writeHead(201, { 'Content-Type': 'application/json', 'email': "mine@gmail.com" })
         const data = fs.readFileSync(filePath, "utf-8");
         // res.setHeader('Content-Type', 'application/json')
         res.end(JSON.stringify(data));
         return;
     } else  if (req.url.startsWith('/todo') && req.method === 'GET') {
-        console.log(req.url)
+        console.log(url)
+        //get the title from the params 
+        const title = url.searchParams.get('title');
         res.writeHead(201, { 'Content-Type': 'application/json', 'email': "mine@gmail.com" })
         res.end('this is sing todo')
         return;
