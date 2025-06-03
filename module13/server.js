@@ -28,9 +28,17 @@ const server = http.createServer((req, res) => {
     } else  if (req.url.startsWith('/todo') && req.method === 'GET') {
         console.log(url)
         //get the title from the params 
+        const existingData = fs.readFileSync(filePath, 'utf-8');
+        const existingTodos = JSON.parse(existingData);
+
         const title = url.searchParams.get('title');
+        const singleTodo = existingTodos.find((todo)=> todo.title === title);
+         if(!singleTodo){
+            res.writeHead(404, { 'Content-type' : 'application/json' })
+            return res.end(JSON.stringify({message: 'this todo is not found'}))
+         }
         res.writeHead(201, { 'Content-Type': 'application/json', 'email': "mine@gmail.com" })
-        res.end('this is sing todo')
+        res.end(JSON.stringify(singleTodo));
         return;
     } else if (req.url === '/todos' && req.method === 'POST') {
         let data = '';
@@ -59,7 +67,46 @@ const server = http.createServer((req, res) => {
 
         })
         return;
-    }else{
+    }
+     // update the todo
+     else if (req.url.startsWith('/update') && req.method === 'PATCH') {
+        console.log('hea ami ashte perechi')
+        let data = '';
+        req.on('data', (chunk) => {
+            data += chunk.toString();            // data = data + chunk;
+        })
+
+
+        req.on('end', () => {
+            console.log('data2', data)
+            // get data from the request Body of client 
+            const {title} = JSON.parse(data);
+            const titleToUpdate = url.searchParams.get('title')
+            
+            // read the existing data from the file 
+            const existingData = fs.readFileSync(filePath, 'utf-8');
+            // parse the existing data 
+            const existingTodos = JSON.parse(existingData);
+            // add the new todo to the existing todos file
+            const todoIndex = existingTodos.findIndex((todo)=> todo.title === titleToUpdate)
+            console.log('todoindex' ,todoIndex)
+           const oldTodo = existingTodos[todoIndex];
+           console.log('oldtodo1', oldTodo)
+           existingTodos[todoIndex] = {...oldTodo, title, updateAt: new Date().toISOString()}
+           
+           console.log('oldtodo2', oldTodo)
+           
+            // write the updated all Todos data to the file
+            fs.writeFileSync(filePath, JSON.stringify(existingTodos, null, 2));
+            // send the response back to the client 
+            
+            res.end(JSON.stringify({...oldTodo, updateAt: new Date().toISOString()}));
+
+        })
+        return;
+    }
+    
+    else{
        return res.end('Not Found route')
     }
     // res.end('this is my todo app server')
