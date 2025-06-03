@@ -17,6 +17,7 @@ const server = http.createServer((req, res) => {
   
     const url = new URL(req.url, `http://${req.headers.host}`);
     const pathname = url.pathname;
+    
     // console.log('url', url.pathname, url.searchParams.get('id'));
 
     if (pathname === '/todos' && req.method === 'GET') {
