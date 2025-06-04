@@ -7,6 +7,12 @@ const filePath = path.join(__dirname, '../../DB/todo.json');
 app.use(express.json())
 
 
+const todosRouter = express.Router();
+const userRouter = express.Router();
+
+app.use('/todos', todosRouter)
+
+
 app.get('/', (req: Request , res: Response ) => {
   res.send('this is my express app!')
 })
