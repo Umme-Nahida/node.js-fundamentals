@@ -3,6 +3,7 @@ const app: Application = express()
 import path from 'path';
 import fs from 'fs';
 import { todosRouter } from './todos/todosRoute';
+import { client } from '../mongodb';
 const filePath = path.join(__dirname, '../../DB/todo.json');
 
 // all middleware 
@@ -14,9 +15,17 @@ app.get('/', (req: Request , res: Response ) => {
   res.send('this is my todos project')
 })
 
-app.post('/createTodo', (req : Request, res: Response)=>{
-  console.log('created todo route')
-  res.send('created todo')
+todosRouter.post('/createTodo', async(req : Request, res: Response)=>{
+   const testTodo = req.body;
+    const db = client.db("todoList");
+    const collection = db.collection("todosCollection")
+    await collection.insertOne(testTodo) 
+    .then(()=>{
+        console.log("inserted todo ")
+    })
+
+    const todos = await collection.find({}).toArray()
+  res.json(todos)
 })
 
 app.get('/users', (req : Request, res: Response)=>{
