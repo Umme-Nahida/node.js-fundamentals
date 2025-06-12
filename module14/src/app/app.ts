@@ -42,6 +42,22 @@ todosRouter.get('/:id', async (req: Request, res: Response) => {
 
 })
 
+// update todo by id
+todosRouter.put('/update-todo/:id', async (req: Request, res: Response) => {
+  const db = client.db("todoList");
+  const collection = db.collection("todosCollection")
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const {title, description, dueDate, complete, createdAt} = req.body;
+
+  const todo = await collection.updateOne(
+    query, 
+    {$set: {title, description, dueDate, complete, createdAt}},
+    {upsert: true})
+    res.json(todo);
+
+})
+
 app.get('/users', (req: Request, res: Response) => {
   console.log('this is user route')
   res.send('this is users')
